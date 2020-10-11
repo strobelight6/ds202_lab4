@@ -1,0 +1,31 @@
+---
+title: "Lab 4"
+author: "Joseph Strobel"
+date: "10/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Setup
+```{r}
+library(readxl)
+defense <- read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
+str(defense)
+```
+
+## Part 1: Cleaning data
+```{r}
+
+```
+
+## Part 2: Tidying
+```{r}
+
+```
+
+## Part 3: Joining data frames
+```{r}
+
+```
