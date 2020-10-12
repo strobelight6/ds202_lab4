@@ -99,6 +99,28 @@ bioClean %>%
 
 
 ## Part 3: Joining data frames
+1.
+```{r}
+bioCleanStates <- bioClean %>%
+  select(Name, State)
+offStates <- left_join(bioCleanStates, offClean, by = "Name")
+offStates <- offStates %>%
+  distinct(offStates$State)
+print(offStates)
+defStates <- left_join(bioCleanStates, defClean, by = "Name")
+defStates <- defStates %>%
+  distinct(defStates$State)
+print(defStates)
+```
+
+
+2.
+```{r}
+
+```
+
+
+3.
 ```{r}
 
 ```
