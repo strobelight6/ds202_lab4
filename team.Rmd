@@ -75,9 +75,9 @@ It looks like all of the turnover categories are rare and also the sack category
 compareGame <- defClean %>%
   pivot_wider(names_from = 'Opponent_Opponent', values_from = 'score') %>%
   filter(stat == 'Tackles_Solo') %>%
-  select(c(stat, Iowa, `Notre Dame`))
+  select(c(Iowa, `Notre Dame`, stat))
 ggplot(compareGame, aes(x = Iowa, y = `Notre Dame`)) +
-  geom_point(position = 'jitter') + ggtitle("Notre Dame vs. Iowa games solo tackles")
+  geom_point(position = 'jitter') + ggtitle("Opponent of Notre Dame vs. Iowa games solo tackles")
 ```
 
 It looks like Notre Dame had the better game based on higher amounts of solo tackles. So, Iowa State had a better game against Iowa. 
@@ -122,5 +122,38 @@ print(defStates)
 
 3.
 ```{r}
+defense18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Defensive')
+offense18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Offensive')
+bio18 <- read_excel('cyclonesFootball2018.xlsx', sheet='Biography')
+
+defClean18 <- defense18 %>% 
+  mutate(across(c("Name", "Opponent_Opponent"), as.factor)) 
+
+defClean18 <- defClean18 %>%
+  mutate_if(is.character, as.numeric, na.rm = TRUE)
+
+str(defClean18)
+
+offClean18 <- offense18 %>% 
+  mutate(across(c("Name", "Opponent_Opponent"), as.factor)) 
+
+offClean18 <- offClean18 %>%
+  mutate_if(is.character, as.numeric, na.rm = TRUE)
+
+str(offClean18)
+
+bioClean18 <- bio18 %>%
+  mutate(Name = as.factor(Name)) %>%
+  mutate(Weight = as.numeric(Weight))
+
+bioClean18 <- bioClean18 %>%
+  separate(Height, c("feet", "inches"), sep="-") %>%
+  mutate(feet=as.numeric(feet)) %>%
+  mutate(inches=as.numeric(inches))
+
+bioClean18$Height = bioClean18$feet*12 + bioClean18$inches
+
+str(bioClean18)
+
 
 ```
