@@ -13,17 +13,90 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readxl)
 defense <- read_excel('cyclonesFootball2019.xlsx', sheet='Defensive')
 str(defense)
+offense <- read_excel('cyclonesFootball2019.xlsx', sheet='Offensive')
+str(offense)
+bio <- read_excel('cyclonesFootball2019.xlsx', sheet='Biography')
+str(bio)
 ```
 
 ## Part 1: Cleaning data
 ```{r}
+library(tidyverse)
+library(dplyr)
+defClean <- defense %>% 
+  mutate(across(c("Name", "Opponent_Opponent"), as.factor)) 
 
+defClean <- defClean %>%
+  mutate_if(is.character, as.numeric, na.rm = TRUE)
+
+str(defClean)
+
+offClean <- offense %>% 
+  mutate(across(c("Name", "Opponent_Opponent"), as.factor)) 
+
+offClean <- offClean %>%
+  mutate_if(is.character, as.numeric, na.rm = TRUE)
+
+str(offClean)
+
+bioClean <- bio %>%
+  mutate(Name = as.factor(Name)) %>%
+  mutate(Weight = as.numeric(Weight))
+
+bioClean <- bioClean %>%
+  separate(Height, c("feet", "inches"), sep="-") %>%
+  mutate(feet=as.numeric(feet)) %>%
+  mutate(inches=as.numeric(inches))
+
+# Height is in inches
+bioClean$Height = bioClean$feet*12 + bioClean$inches
+
+str(bioClean)
 ```
 
 ## Part 2: Tidying
+1.
 ```{r}
-
+defClean <- defClean %>%
+  pivot_longer(cols=Tackles_Solo:Pass_PB, names_to='stat', values_to="score")
 ```
+
+2. 
+```{r}
+ggplot(defClean, aes(x = reorder(stat, -score), weight = score)) +
+  geom_bar() +
+  labs(fill = 'Defensive Skills') +
+  ggtitle('Statistics by Defensive Skills')
+```
+
+It looks like all of the turnover categories are rare and also the sack category. 
+3. 
+```{r}
+compareGame <- defClean %>%
+  pivot_wider(names_from = 'Opponent_Opponent', values_from = 'score') %>%
+  filter(stat == 'Tackles_Solo') %>%
+  select(c(stat, Iowa, `Notre Dame`))
+ggplot(compareGame, aes(x = Iowa, y = `Notre Dame`)) +
+  geom_point(position = 'jitter') + ggtitle("Notre Dame vs. Iowa games solo tackles")
+```
+
+It looks like Notre Dame had the better game based on higher amounts of solo tackles. So, Iowa State had a better game against Iowa. 
+
+4. 
+```{r}
+bioClean <- bioClean %>%
+  separate(Hometown, c("City", "State"), sep=",")
+head(bioClean[c("City", "State")])
+```
+
+5. 
+```{r}
+bioClean %>%
+  group_by(State) %>%
+  summarise(numPlayers = n()) %>%
+  arrange(desc(numPlayers))
+```
+
 
 ## Part 3: Joining data frames
 ```{r}
